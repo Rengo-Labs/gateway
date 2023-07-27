@@ -224,7 +224,7 @@ export class CosmosBase {
     );
   }
 
-  // from Solana.ts
+  // from Casper.ts
   async encrypt(privateKey: string, password: string): Promise<string> {
     const iv = crypto.getRandomValues(new Uint8Array(16));
     const salt = crypto.getRandomValues(new Uint8Array(16));
