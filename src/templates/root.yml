@@ -107,3 +107,7 @@ configurations:
   $namespace xsswap:
     configurationPath: xsswap.yml
     schemaPath: xsswap-schema.json
+
+  $namespace casper:
+    configurationPath: casperswap.yml
+    schemaPath: casperswap-schema.json

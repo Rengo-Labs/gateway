@@ -19,6 +19,7 @@ import { XsswapConfig } from './xsswap/xsswap.config';
 import { ConnectorsResponse } from './connectors.request';
 import { DexalotCLOBConfig } from './dexalot/dexalot.clob.config';
 import { TinymanConfig } from './tinyman/tinyman.config';
+import { CasperswapConfig } from './casperswap/casperswap.config';
 
 export namespace ConnectorsRoutes {
   export const router = Router();
@@ -150,6 +151,12 @@ export namespace ConnectorsRoutes {
             trading_type: TinymanConfig.config.tradingTypes,
             chain_type: TinymanConfig.config.chainType,
             available_networks: TinymanConfig.config.availableNetworks,
+          },
+          {
+            name: 'casper',
+            trading_type: CasperswapConfig.config.tradingTypes,
+            chain_type: CasperswapConfig.config.chainType,
+            available_networks: CasperswapConfig.config.availableNetworks,
           },
         ],
       });
