@@ -30,7 +30,7 @@ export class Casperswap implements Uniswapish {
   private _ready: boolean = false;
 
   private constructor(chain: string, network: string) {
-    console.error('##### Casperswap constructor ####', chain, network)
+    console.error('##### Casperswap constructor ####', chain, network);
     const config = CasperswapConfig.config;
     if (chain === 'casper') {
       this.chain = Casper.getInstance(network);
@@ -41,7 +41,7 @@ export class Casperswap implements Uniswapish {
     this._routerAbi = routerAbi.abi;
     this._gasLimitEstimate = config.gasLimitEstimate;
     this._router = config.casperswapRouterAddress(chain);
-    console.error('##### Casperswap constructor ####', this._router)
+    console.error('##### Casperswap constructor ####', this._router);
   }
 
   public static getInstance(chain: string, network: string): Casperswap {
