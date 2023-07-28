@@ -6,35 +6,27 @@ export namespace CasperswapConfig {
     allowedSlippage: string;
     gasLimitEstimate: number;
     ttl: number;
-    sushiswapRouterAddress: (chain: string, network: string) => string;
     tradingTypes: Array<string>;
     chainType: string;
     availableNetworks: Array<AvailableNetworks>;
+    casperswapRouterAddress: (chain: string) => string;
   }
 
   export const config: NetworkConfig = {
-    allowedSlippage: ConfigManagerV2.getInstance().get(
-      'casperswap.allowedSlippage'
-    ),
-    gasLimitEstimate: ConfigManagerV2.getInstance().get(
-      'casperswap.gasLimitEstimate'
-    ),
-    ttl: ConfigManagerV2.getInstance().get('casperswap.ttl'),
-    sushiswapRouterAddress: (chain: string, network: string) =>
+    casperswapRouterAddress: (chain: string) =>
       ConfigManagerV2.getInstance().get(
-        'casperswap.contractAddresses.' +
-          chain +
-          '.' +
-          network +
-          '.casperswapRouterAddress'
+        'casperswap.contractAddresses.' + chain + '.routerAddress'
       ),
-    tradingTypes: ['AMM'],
-    chainType: 'EVM',
+    allowedSlippage: '0.5',
+    gasLimitEstimate: 100000000,
+    ttl: 180000,
+    tradingTypes: ['CSPR'],
+    chainType: 'CASPERSWAP',
     availableNetworks: [
       {
-        chain: 'casper',
-        networks: ['mainnet', 'integrationtest', 'testnet'],
-      }
+        chain: 'casperswap',
+        networks: ['mainnet', 'testnet', 'integrationnet'],
+      },
     ],
   };
 }

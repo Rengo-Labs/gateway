@@ -1,17 +1,16 @@
 import { UniswapishPriceError } from '../../services/error-handler';
 import { CasperswapConfig } from './casperswap.config';
 import routerAbi from './casperswap_router.json';
-
 //import { ContractInterface } from '@ethersproject/contracts';
 
-import {
-  Percent,
-  Token,
-  CurrencyAmount,
-  Trade,
-  Pair,
-  TradeType,
-} from '@sushiswap/sdk';
+// import {
+//   Percent,
+//   Token,
+//   CurrencyAmount,
+//   Trade,
+//   Pair,
+//   TradeType,
+// } from '@sushiswap/sdk';
 //import IUniswapV2Pair from '@uniswap/v2-core/build/IUniswapV2Pair.json';
 import { ExpectedTrade, Uniswapish } from '../../services/common-interfaces';
 
@@ -27,22 +26,22 @@ export class Casperswap implements Uniswapish {
   private _routerAbi: any;
   private _gasLimitEstimate: number;
   private _ttl: number;
-  private chainId;
-  private tokenList: Record<string, Token> = {};
+  private tokenList: Record<string, any> = {};
   private _ready: boolean = false;
 
   private constructor(chain: string, network: string) {
+    console.error('##### Casperswap constructor ####', chain, network)
     const config = CasperswapConfig.config;
     if (chain === 'casper') {
       this.chain = Casper.getInstance(network);
     } else {
       throw new Error('unsupported chain');
     }
-    this.chainId = this.chain.chainId;
     this._ttl = config.ttl;
     this._routerAbi = routerAbi.abi;
     this._gasLimitEstimate = config.gasLimitEstimate;
-    this._router = config.sushiswapRouterAddress(chain, network);
+    this._router = config.casperswapRouterAddress(chain);
+    console.error('##### Casperswap constructor ####', this._router)
   }
 
   public static getInstance(chain: string, network: string): Casperswap {
@@ -62,7 +61,7 @@ export class Casperswap implements Uniswapish {
    *
    * @param address Token address
    */
-  public getTokenByAddress(address: string): Token {
+  public getTokenByAddress(address: string): any {
     return this.tokenList[address];
   }
 
@@ -71,13 +70,14 @@ export class Casperswap implements Uniswapish {
       await this.chain.init();
     }
     for (const token of this.chain.storedTokenList) {
-      this.tokenList[token.address] = new Token(
-        this.chainId,
-        token.address,
-        token.decimals,
-        token.symbol,
-        token.name
-      );
+      this.tokenList[token.address] = token;
+      // this.tokenList[token.address] = new Token(
+      //   this.chainId,
+      //   token.address,
+      //   token.decimals,
+      //   token.symbol,
+      //   token.name
+      // );
     }
     this._ready = true;
   }
@@ -117,10 +117,10 @@ export class Casperswap implements Uniswapish {
   /**
    * Gets the allowed slippage percent from configuration.
    */
-  getSlippagePercentage(): Percent {
+  getSlippagePercentage(): any {
     const allowedSlippage = CasperswapConfig.config.allowedSlippage;
     const nd = allowedSlippage.match(percentRegexp);
-    if (nd) return new Percent(nd[1], nd[2]);
+    if (nd) return '0.0';
     throw new Error(
       'Encountered a malformed percent string in the config for ALLOWED_SLIPPAGE.'
     );
@@ -133,7 +133,7 @@ export class Casperswap implements Uniswapish {
    * @param quoteToken second token
    */
 
-  async fetchData(baseToken: Token, quoteToken: Token): Promise<any> {
+  async fetchData(baseToken: any, quoteToken: any): Promise<any> {
     /*
     const pairAddress = Pair.getAddress(baseToken, quoteToken);
     const contract = new Contract(
@@ -167,23 +167,35 @@ export class Casperswap implements Uniswapish {
    */
 
   async estimateSellTrade(
-    baseToken: Token,
-    quoteToken: Token,
+    baseToken: any,
+    quoteToken: any,
     amount: BigNumber
   ): Promise<ExpectedTrade> {
-    const nativeTokenAmount: CurrencyAmount<Token> =
-      CurrencyAmount.fromRawAmount(baseToken, amount.toString());
+    // const nativeTokenAmount: CurrencyAmount<Token> =
+    //   CurrencyAmount.fromRawAmount(baseToken, amount.toString());
+
+    // const nativeTokenAmount = BigNumber.from(amount.toString());
+
+    logger.info(
+      'estimateSellTrade: ' +
+        baseToken +
+        ' ' +
+        quoteToken +
+        ' ' +
+        amount.toString()
+    );
 
     logger.info(
       `Fetching pair data for ${baseToken.address}-${quoteToken.address}.`
     );
 
-    const pair: Pair = await this.fetchData(baseToken, quoteToken);
+    // const pair: any = await this.fetchData(baseToken, quoteToken);
 
-    const trades: Trade<Token, Token, TradeType.EXACT_INPUT>[] =
-      Trade.bestTradeExactIn([pair], nativeTokenAmount, quoteToken, {
-        maxHops: 1,
-      });
+    // const trades: Trade<Token, Token, TradeType.EXACT_INPUT>[] =
+    //   Trade.bestTradeExactIn([pair], nativeTokenAmount, quoteToken, {
+    //     maxHops: 1,
+    //   });
+    const trades: any = [];
     if (!trades || trades.length === 0) {
       throw new UniswapishPriceError(
         `priceSwapIn: no trade pair found for ${baseToken} to ${quoteToken}.`
@@ -201,19 +213,30 @@ export class Casperswap implements Uniswapish {
     return { trade: trades[0], expectedAmount };
   }
   async estimateBuyTrade(
-    quoteToken: Token,
-    baseToken: Token,
+    quoteToken: any,
+    baseToken: any,
     amount: BigNumber
   ): Promise<ExpectedTrade> {
-    const nativeTokenAmount: CurrencyAmount<Token> =
-      CurrencyAmount.fromRawAmount(baseToken, amount.toString());
+    // const nativeTokenAmount: CurrencyAmount<Token> =
+    //   CurrencyAmount.fromRawAmount(baseToken, amount.toString());
+    // const nativeTokenAmount = BigNumber.from(amount.toString());
+    // const pair: any = await this.fetchData(quoteToken, baseToken);
 
-    const pair: Pair = await this.fetchData(quoteToken, baseToken);
+    // const trades: Trade<Token, Token, TradeType.EXACT_OUTPUT>[] =
+    //   Trade.bestTradeExactOut([pair], quoteToken, nativeTokenAmount, {
+    //     maxHops: 1,
+    //   });
 
-    const trades: Trade<Token, Token, TradeType.EXACT_OUTPUT>[] =
-      Trade.bestTradeExactOut([pair], quoteToken, nativeTokenAmount, {
-        maxHops: 1,
-      });
+    logger.info(
+      'estimateBuyTrade: ' +
+        baseToken +
+        ' ' +
+        quoteToken +
+        ' ' +
+        amount.toString()
+    );
+
+    const trades: any = [];
     if (!trades || trades.length === 0) {
       throw new UniswapishPriceError(
         `priceSwapOut: no trade pair found for ${quoteToken.address} to ${baseToken.address}.`
