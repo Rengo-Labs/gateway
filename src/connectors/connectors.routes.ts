@@ -153,7 +153,7 @@ export namespace ConnectorsRoutes {
             available_networks: TinymanConfig.config.availableNetworks,
           },
           {
-            name: 'casper',
+            name: 'casperswap',
             trading_type: CasperswapConfig.config.tradingTypes,
             chain_type: CasperswapConfig.config.chainType,
             available_networks: CasperswapConfig.config.availableNetworks,

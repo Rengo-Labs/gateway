@@ -81,7 +81,7 @@ export class Casper implements Casperish {
     this.cache = new NodeCache({ stdTTL: 3600 }); // set default cache ttl to 1hr
 
     this.chainId = 0x1;
-    this.provider = "poner proveedor";
+    this.provider = this._config.network.name;
     this._nativeTokenSymbol = 'CSPR';
     //this._tokenProgramAddress = new PublicKey(this._config.tokenProgram);
 

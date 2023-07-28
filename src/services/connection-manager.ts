@@ -37,6 +37,7 @@ import { DexalotCLOB } from '../connectors/dexalot/dexalot';
 import { Algorand } from '../chains/algorand/algorand';
 import { Cosmos } from '../chains/cosmos/cosmos';
 import { Tinyman } from '../connectors/tinyman/tinyman';
+import { Casper } from '../chains/casper/casper';
 
 export type ChainUnion =
   | Algorand
@@ -44,7 +45,8 @@ export type ChainUnion =
   | Ethereumish
   | Nearish
   | Injective
-  | Xdcish;
+  | Xdcish
+  | Casper;
 
 export type Chain<T> = T extends Algorand
   ? Algorand
@@ -57,6 +59,8 @@ export type Chain<T> = T extends Algorand
   : T extends Xdcish
   ? Xdcish
   : T extends Injective
+  ? Casper
+  : T extends Casper
   ? Injective
   : never;
 
@@ -117,6 +121,8 @@ export function getChainInstance(
     connection = Xdc.getInstance(network);
   } else if (chain === 'injective') {
     connection = Injective.getInstance(network);
+  } else if (chain === 'casper') {
+    connection = Casper.getInstance(network);
   } else {
     connection = undefined;
   }
@@ -131,7 +137,8 @@ export type ConnectorUnion =
   | RefAMMish
   | CLOBish
   | InjectiveClobPerp
-  | Tinyman;
+  | Tinyman
+  | Casper;
 
 export type Connector<T> = T extends Uniswapish
   ? Uniswapish
@@ -147,6 +154,8 @@ export type Connector<T> = T extends Uniswapish
   ? InjectiveClobPerp
   : T extends Tinyman
   ? Tinyman
+  : T extends Casper
+  ? Casper
   : never;
 
 export async function getConnector<T>(
@@ -199,6 +208,8 @@ export async function getConnector<T>(
     connectorInstance = DexalotCLOB.getInstance(network);
   } else if (chain == 'algorand' && connector == 'tinyman') {
     connectorInstance = Tinyman.getInstance(network);
+  } else if (chain == 'casper') {
+    connectorInstance = Casper.getInstance(network);
   } else {
     throw new Error('unsupported chain or connector');
   }
