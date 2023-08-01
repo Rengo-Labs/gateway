@@ -26,11 +26,12 @@ import {
   getNotNullOrThrowError,
   runWithRetryAndTimeout,
 } from './casper.helpers';
-import { countDecimals, TokenValue } from '../../services/base';
+import { TokenValue } from '../../services/base';
 //import { ConfigManagerCertPassphrase } from '../../services/config-manager-cert-passphrase';
 import { logger } from '../../services/logger';
 import { Config, getCasperConfig } from './casper.config';
 import { TransactionResponseStatusCode } from './casper.requests';
+import { CasperController } from './casper.controllers';
 //import axios from 'axios';
 
 const crypto = require('crypto').webcrypto;
@@ -66,6 +67,7 @@ export class Casper implements Casperish {
   // there are async values set in the constructor
   private _ready: boolean = false;
   private initializing: boolean = false;
+  public controller = CasperController;
 
   constructor(network: string) {
     this._network = network;
@@ -85,9 +87,9 @@ export class Casper implements Casperish {
     this._nativeTokenSymbol = 'CSPR';
     //this._tokenProgramAddress = new PublicKey(this._config.tokenProgram);
 
-    this.transactionLamports = this._config.transactionLamports;
-    this._lamportPrice = this._config.lamportsToSol;
-    this._lamportDecimals = countDecimals(this._lamportPrice);
+    this.transactionLamports = 1500000; //this._config.transactionLamports;
+    this._lamportPrice = 1500000; //this._config.lamportsToCSPR;
+    this._lamportDecimals = 0;
 
     this._requestCount = 0;
     this._metricsLogInterval = 300000; // 5 minutes
@@ -120,11 +122,13 @@ export class Casper implements Casperish {
   }
 
   public onNewSlot(func: any) {
-    this._connection.onSlotUpdate(func);
+    console.log(func);
+    //this._connection.onSlotUpdate(func);
   }
 
   public onDebugMessage(filter: any, func: any) {
-    this._connection.onLogs(filter, func);
+    console.log(filter, func);
+    //this._connection.onLogs(filter, func);
   }
 
   async init(): Promise<void> {
@@ -141,25 +145,27 @@ export class Casper implements Casperish {
   }
 
   async loadTokens(): Promise<void> {
-    this.tokenList = []; //await this.getTokenList();
+    /*this.tokenList = await this.getTokenList();
+    console.log('Cargar tokens');
     this.tokenList.forEach((token: any) => {
       this._tokenMap[token.symbol] = token;
       this._tokenAddressMap[token.address] = token;
     });
+    */
   }
 
   // returns a Tokens for a given list source and list type
-  /*
-  async getTokenList(): Promise<any[]> {
-    const tokens: any[] =
-      await new CustomStaticTokenListResolutionStrategy(
-        this._config.tokens.url
-      ).resolve();
+  async getTokenList(symbols: string[]): Promise<any[]> {
+    const tokens: any[] = await new CustomStaticTokenListResolutionStrategy(
+      this._config.tokens.url
+    ).resolve();
 
-    const tokenListContainer = new TokenListContainer(tokens);
+    const result = symbols.map((value) => {
+      return tokens.filter((t) => t.symbol === value)[0] ?? null;
+    });
 
-    return tokenListContainer.filterByClusterSlug(this._network).getList();
-  }*/
+    return result.filter((v) => v != null);
+  }
 
   // returns the price of 1 lamport in SOL
   public get lamportPrice(): number {
@@ -610,7 +616,7 @@ export class Casper implements Casperish {
     this._requestCount = 0; // reset
   }
 
-  public get network(): string {
+  public get chain(): string {
     return this._network;
   }
 
@@ -639,6 +645,20 @@ export class Casper implements Casperish {
     if (this._network in Casper._instances) {
       delete Casper._instances[this._network];
     }
+  }
+}
+
+class CustomStaticTokenListResolutionStrategy {
+  resolve: () => Promise<any>;
+
+  constructor(url: string) {
+    this.resolve = async () => {
+      if (!url.startsWith('https')) {
+        return require(url)['tokens'];
+      } else {
+        return []; //(await runWithRetryAndTimeout<any>(axios, axios.get, [url])).data['tokens'];
+      }
+    };
   }
 }
 

@@ -5,26 +5,32 @@ import {
   NetworkSelectionRequest,
 } from '../../services/common-interfaces';
 
-export type SolanaTransactionResponse = TransactionResponse;
+export type CasperTransactionResponse = TransactionResponse;
 
-export interface SolanaBalanceRequest extends NetworkSelectionRequest {
+export interface CasperBalanceRequest {
+  address: string; // the user's Cosmos address as Bech32
+  tokenSymbols: string[]; // a list of token symbol
+}
+
+export interface CasperBalanceRequest extends NetworkSelectionRequest {
   address: string; // the user's Casper address as Base58
   tokenSymbols: string[]; // a list of token symbol
 }
 
-export interface SolanaBalanceResponse {
+export interface CasperBalanceResponse {
   network: string;
   timestamp: number;
   latency: number;
   balances: Record<string, string>; // the balance should be a string encoded number
 }
 
-export interface SolanaTokenRequest extends NetworkSelectionRequest {
-  address: string; // the user's Casper address as Base58
-  token: string; // the token symbol the spender will be approved for
+export interface CasperTokenRequest extends NetworkSelectionRequest {
+  token: string;
+  address: string;
+  tokenSymbols: string[]; // the token symbol the spender will be approved for
 }
 
-export interface SolanaTokenResponse {
+export interface CasperTokenResponse {
   network: string;
   timestamp: number;
   token: string; // the token symbol the spender will be approved for
@@ -33,7 +39,7 @@ export interface SolanaTokenResponse {
   amount: string | null;
 }
 
-export interface SolanaPollRequest extends NetworkSelectionRequest {
+export interface CasperPollRequest extends NetworkSelectionRequest {
   txHash: string;
 }
 
@@ -42,7 +48,7 @@ export enum TransactionResponseStatusCode {
   CONFIRMED = 1,
 }
 
-export interface SolanaPollResponse {
+export interface CasperPollResponse {
   network: string;
   timestamp: number;
   currentBlock: number;

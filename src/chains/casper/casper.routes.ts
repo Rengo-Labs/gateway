@@ -10,12 +10,12 @@ import {
   token,
 } from './casper.controllers';
 import {
-  SolanaBalanceRequest,
-  SolanaBalanceResponse,
-  SolanaPollRequest,
-  SolanaPollResponse,
-  SolanaTokenRequest,
-  SolanaTokenResponse,
+  CasperBalanceRequest,
+  CasperBalanceResponse,
+  CasperPollRequest,
+  CasperPollResponse,
+  CasperTokenRequest,
+  CasperTokenResponse,
 } from './casper.requests';
 import {
   validateSolanaBalanceRequest,
@@ -27,13 +27,11 @@ import {
 export namespace SolanaRoutes {
   export const router = Router();
 
-  export const getSolana = async (request: Request) => {
-    console.log("Paso 1", request.body, request.body.network);
-    const solana = await Casper.getInstance(request.body.network);
-    await solana.init();
-    console.log("Paso 2");
-
-    return solana;
+  export const getCasper = async (request: Request) => {
+    console.log('Paso 1', request.body, request.body.network);
+    const casper = await Casper.getInstance(request.body.network);
+    await casper.init();
+    return casper;
   };
 
   //router.use(asyncHandler(verifySolanaIsAvailable));
@@ -41,12 +39,12 @@ export namespace SolanaRoutes {
   router.get(
     '/',
     asyncHandler(async (request: Request, response: Response) => {
-      const solana = await getSolana(request);
+      const casper = await getCasper(request);
 
-      const rpcUrl = solana.rpcUrl;
+      const rpcUrl = casper.rpcUrl;
 
       response.status(200).json({
-        network: solana.network,
+        network: casper.chain,
         rpcUrl: rpcUrl,
         connection: true,
         timestamp: Date.now(),
@@ -59,14 +57,14 @@ export namespace SolanaRoutes {
     '/balances',
     asyncHandler(
       async (
-        request: Request<ParamsDictionary, unknown, SolanaBalanceRequest>,
-        response: Response<SolanaBalanceResponse | string>,
+        request: Request<ParamsDictionary, unknown, CasperBalanceRequest>,
+        response: Response<CasperBalanceResponse | string>,
         _next: NextFunction
       ) => {
-        const solana = await getSolana(request);
+        const casper = await getCasper(request);
 
         validateSolanaBalanceRequest(request.body);
-        response.status(200).json(await balances(solana, request.body));
+        response.status(200).json(await balances(casper, request.body));
       }
     )
   );
@@ -76,14 +74,14 @@ export namespace SolanaRoutes {
     '/token',
     asyncHandler(
       async (
-        request: Request<ParamsDictionary, unknown, SolanaTokenRequest>,
-        response: Response<SolanaTokenResponse | string>,
+        request: Request<ParamsDictionary, unknown, CasperTokenRequest>,
+        response: Response<CasperTokenResponse | string>,
         _next: NextFunction
       ) => {
-        const solana = await getSolana(request);
+        const casper = await getCasper(request);
 
         validateSolanaGetTokenRequest(request.body);
-        response.status(200).json(await token(solana, request.body));
+        response.status(200).json(await token(casper, request.body));
       }
     )
   );
@@ -93,16 +91,16 @@ export namespace SolanaRoutes {
     '/token',
     asyncHandler(
       async (
-        request: Request<ParamsDictionary, unknown, SolanaTokenRequest>,
-        response: Response<SolanaTokenResponse | string>,
+        request: Request<ParamsDictionary, unknown, CasperTokenRequest>,
+        response: Response<CasperTokenResponse | string>,
         _next: NextFunction
       ) => {
-        const solana = await getSolana(request);
+        const casper = await getCasper(request);
 
         validateSolanaPostTokenRequest(request.body);
         response
           .status(200)
-          .json(await getOrCreateTokenAccount(solana, request.body));
+          .json(await getOrCreateTokenAccount(casper, request.body));
       }
     )
   );
@@ -113,13 +111,13 @@ export namespace SolanaRoutes {
     '/poll',
     asyncHandler(
       async (
-        request: Request<ParamsDictionary, unknown, SolanaPollRequest>,
-        response: Response<SolanaPollResponse>
+        request: Request<ParamsDictionary, unknown, CasperPollRequest>,
+        response: Response<CasperPollResponse>
       ) => {
-        const solana = await getSolana(request);
+        const casper = await getCasper(request);
 
         validateSolanaPollRequest(request.body);
-        response.status(200).json(await poll(solana, request.body));
+        response.status(200).json(await poll(casper, request.body));
       }
     )
   );

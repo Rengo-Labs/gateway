@@ -1,0 +1,78 @@
+{
+   "name":"CoinGecko",
+   "logoURI":"https://www.coingecko.com/assets/thumbnail-007177f3eca19695592f0b8b0eabbdae282b54154e1be912285c9034ea6cbaf2.png",
+   "keywords":[
+      "defi"
+   ],
+   "timestamp":"2023-06-10T11:05:40.919+00:00",
+   "tokens":[
+      {
+         "chainId":1,
+         "address": "",
+         "packageHash": "",
+         "name":"Casper",
+         "symbol":"CSPR",
+         "decimals":9,
+         "logoURI":"https://assets.coingecko.com/coins/images/9354/thumb/L32_KzNQ_400x400.jpg?1566513096"
+      },
+      {
+         "chainId":1,
+         "address": "hash-595c463ecbf8b61ff76c91dc90297283989ad41077fba88a8a4f76cc5f2976c2",
+         "packageHash": "hash-b9b912b1f4a2d4171dff3e04b20a8f6f4f0f2d79dfb782de988145ce257ae639",
+         "name":"CasperSwap",
+         "symbol":"CST",
+         "decimals":9,
+         "logoURI":"https://assets.coingecko.com/coins/images/4682/thumb/PERL.eco-Icon-green_6x.png?1624365340"
+      },
+     {
+       "chainId":1,
+       "address": "hash-012f8f3689ddf5c7a92ddeb54a311afb660051bb5fab3568dbb3d796809be8c6",
+       "packageHash": "hash-afc752ad814c4e05cafb25fb676fd74b65f1a340c5b5f0055814d3dd5115280a",
+       "name":"Ethereum",
+       "symbol":"dETH",
+       "decimals":9,
+       "logoURI":"https://assets.coingecko.com/coins/images/4682/thumb/PERL.eco-Icon-green_6x.png?1624365340"
+     },
+     {
+       "chainId":1,
+       "address": "hash-6b7453749234eb23f6e81aa2fe01b3a8f4bafb94247942a6ac0d77e952978afa",
+       "packageHash": "hash-c6649901da894d4ac2c77c0ae217190f79cabc8c0c91788ee997f670b8bdd05e",
+       "name":"Wrapped Casper",
+       "symbol":"WCSPR",
+       "decimals":9,
+       "logoURI":"https://assets.coingecko.com/coins/images/4682/thumb/PERL.eco-Icon-green_6x.png?1624365340"
+     },
+     {
+       "chainId":1,
+       "address": "hash-b53fa728c7074c84f35407f4d0989eb4133d391402b7ce13b7feeb01479a4f01",
+       "packageHash": "hash-6a39adb3af054cbd3055e07213ec55343d8e785ac8a43b9717fb21da55dc1f40",
+       "name":"USD Tether",
+       "symbol":"USDT",
+       "decimals":9,
+       "logoURI":"https://assets.coingecko.com/coins/images/4682/thumb/PERL.eco-Icon-green_6x.png?1624365340"
+     },
+     {
+       "chainId":1,
+       "address": "hash-48bd364532febf044cca8d2d716336b93d27458ce0aa48ad292ca28304fa8649",
+       "packageHash": "hash-354f65e7c195e246c6f1171b8c0c036794593b3fd84c2442046519e1d4c15cc0",
+       "name":"USD Coin",
+       "symbol":"USDC",
+       "decimals":9,
+       "logoURI":"https://assets.coingecko.com/coins/images/4682/thumb/PERL.eco-Icon-green_6x.png?1624365340"
+     },
+     {
+       "chainId":1,
+       "address": "hash-3e46fdbcd0e5882ef2130456195f1658f02789b4b69a8e8e1dde773c2565555a",
+       "packageHash": "hash-c44d2505862832d8043fbe32f068b92895f84b2e479f8a29954a94fce6835360",
+       "name":"BTC",
+       "symbol":"dBTC",
+       "decimals":9,
+       "logoURI":"https://assets.coingecko.com/coins/images/4682/thumb/PERL.eco-Icon-green_6x.png?1624365340"
+     }
+   ],
+   "version":{
+      "major":1330,
+      "minor":0,
+      "patch":0
+   }
+}

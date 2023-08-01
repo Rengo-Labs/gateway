@@ -13,11 +13,8 @@ export interface TokenConfig {
 export interface Config {
   network: NetworkConfig;
   nativeCurrencySymbol: string;
-  tokenProgram: string;
   transactionLamports: number;
-  lamportsToSol: number;
   timeToLive: number;
-  customNodeUrl: string | undefined;
   tokens: TokenConfig;
 }
 
@@ -26,27 +23,30 @@ export function getCasperConfig(
   networkName: string
 ): Config {
   const configManager = ConfigManagerV2.getInstance();
-  console.log("chainName", chainName, networkName);
+  console.log('chainName', chainName, networkName);
+  configManager.get('casper.contractAddresses.mainnet.nodeURL');
+  //configManager.get(chainName + '.networks.' + networkName);
+  //configManager.get(chainName);
+  //configManager.get(chainName + '.networks.' + networkName + '.nodeURL');
   return {
     network: {
       name: networkName,
       nodeUrl: configManager.get(
-        chainName + '.networks.' + networkName + '.nodeURL'
+        chainName + '.contractAddresses.' + networkName + '.nodeURL'
       ),
-      maxLRUCacheInstances: configManager.get(
-        chainName + '.networks.' + networkName + '.maxLRUCacheInstances'
-      ),
+      //nodeUrl: '',
+      //maxLRUCacheInstances: configManager.get(chainName + '.networks.' + networkName + '.maxLRUCacheInstances'),
+      maxLRUCacheInstances: 10,
     },
     nativeCurrencySymbol: configManager.get(
-      chainName + '.networks.' + networkName + '.nativeCurrencySymbol'
+      chainName + '.nativeCurrencySymbol'
     ),
-    tokenProgram: configManager.get(chainName + '.tokenProgram'),
     transactionLamports: configManager.get(chainName + '.transactionLamports'),
-    lamportsToSol: configManager.get(chainName + '.lamportsToSol'),
     timeToLive: configManager.get(chainName + '.timeToLive'),
-    customNodeUrl: configManager.get(chainName + '.customNodeUrl'),
     tokens: {
-      url: configManager.get(chainName + '.tokens.url'),
+      url: configManager.get(
+        chainName + '.contractAddresses.' + networkName + '.tokenURL'
+      ),
     },
   };
 }

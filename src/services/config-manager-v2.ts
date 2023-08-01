@@ -163,6 +163,7 @@ export class ConfigurationNamespace {
       if (!this.#validator(configTemplateCandidate)) {
         for (const err of this.#validator.errors as DefinedError[]) {
           if (err.keyword === 'additionalProperties') {
+            console.log('Path ', err.params.additionalProperty);
             throw new Error(
               `${this.id} config file seems to be outdated/broken due to additional property "${err.params.additionalProperty}". Kindly fix manually.`
             );

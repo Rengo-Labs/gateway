@@ -12,18 +12,18 @@ import {
 import { Casperish } from './casper';
 
 import {
-  SolanaBalanceRequest,
-  SolanaBalanceResponse,
-  SolanaPollRequest,
-  SolanaPollResponse,
-  SolanaTokenRequest,
-  SolanaTokenResponse,
+  CasperBalanceRequest,
+  CasperBalanceResponse,
+  CasperPollRequest,
+  CasperPollResponse,
+  CasperTokenRequest,
+  CasperTokenResponse,
 } from './casper.requests';
 
 export async function balances(
   solanaish: Casperish,
-  req: SolanaBalanceRequest
-): Promise<SolanaBalanceResponse | string> {
+  req: CasperBalanceRequest
+): Promise<CasperBalanceResponse | string> {
   const initTime = Date.now();
   let wallet: Keypair;
   try {
@@ -36,17 +36,17 @@ export async function balances(
     );
   }
   const balances = await solanaish.getBalances(wallet);
-  const filteredBalances = toSolanaBalances(balances, req.tokenSymbols);
+  const filteredBalances = toCasperBalances(balances, req.tokenSymbols);
 
   return {
-    network: solanaish.network,
+    network: solanaish.chain,
     timestamp: initTime,
     latency: latency(initTime, Date.now()),
     balances: filteredBalances,
   };
 }
 
-const toSolanaBalances = (
+const toCasperBalances = (
   balances: Record<string, TokenValue>,
   tokenSymbols: string[]
 ): Record<string, string> => {
@@ -70,8 +70,8 @@ const toSolanaBalances = (
 
 export async function poll(
   solanaish: Casperish,
-  req: SolanaPollRequest
-): Promise<SolanaPollResponse> {
+  req: CasperPollRequest
+): Promise<CasperPollResponse> {
   const initTime = Date.now();
   const currentBlock = await solanaish.getCurrentBlockNumber();
   const txData = getNotNullOrThrowError<TransactionResponse>(
@@ -80,7 +80,7 @@ export async function poll(
   const txStatus = await solanaish.getTransactionStatusCode(txData);
 
   return {
-    network: solanaish.network,
+    network: solanaish.chain,
     timestamp: initTime,
     currentBlock: currentBlock,
     txHash: req.txHash,
@@ -93,8 +93,8 @@ export async function poll(
 
 export async function token(
   solanaish: Casperish,
-  req: SolanaTokenRequest
-): Promise<SolanaTokenResponse> {
+  req: CasperTokenRequest
+): Promise<CasperTokenResponse> {
   const initTime = Date.now();
   const tokenInfo = solanaish.getTokenForSymbol(req.token);
   if (!tokenInfo) {
@@ -119,7 +119,7 @@ export async function token(
   }
 
   return {
-    network: solanaish.network,
+    network: solanaish.chain,
     timestamp: initTime,
     token: req.token,
     mintAddress: mintAddress.toBase58(),
@@ -130,8 +130,8 @@ export async function token(
 
 export async function getOrCreateTokenAccount(
   solanaish: Casperish,
-  req: SolanaTokenRequest
-): Promise<SolanaTokenResponse> {
+  req: CasperTokenRequest
+): Promise<CasperTokenResponse> {
   const initTime = Date.now();
   const tokenInfo = solanaish.getTokenForSymbol(req.token);
   if (!tokenInfo) {
@@ -159,11 +159,65 @@ export async function getOrCreateTokenAccount(
   }
 
   return {
-    network: solanaish.network,
+    network: solanaish.chain,
     timestamp: initTime,
     token: req.token,
     mintAddress: mintAddress.toBase58(),
     accountAddress: 'account?.address.toBase58()',
     amount,
+  };
+}
+
+export class CasperController {
+  static async balances(casper: Casperish, req: CasperBalanceRequest) {
+    //validateCosmosBalanceRequest(req);
+
+    const wallet = ''; // await casper.getWallet(req.address, 'cosmos');
+
+    const { tokenSymbols } = req;
+
+    tokenSymbols.forEach((symbol: string) => {
+      const token = casper.getTokenForSymbol(symbol);
+
+      if (!token) {
+        throw new HttpException(
+          500,
+          TOKEN_NOT_SUPPORTED_ERROR_MESSAGE + symbol,
+          TOKEN_NOT_SUPPORTED_ERROR_CODE
+        );
+      }
+    });
+
+    const balances = await casper.getBalances(wallet);
+    const filteredBalances = toCasperBalances(balances, tokenSymbols);
+
+    return {
+      balances: filteredBalances,
+    };
+  }
+
+  static async poll(cosmos: Casperish, req: CasperPollRequest) {
+    //validateCosmosPollRequest(req);
+
+    const transaction = await cosmos.getTransaction(req.txHash);
+    const currentBlock = await cosmos.getCurrentBlockNumber();
+
+    return {
+      txHash: req.txHash,
+      currentBlock,
+      txBlock: transaction.height,
+      gasUsed: transaction.gasUsed,
+      gasWanted: transaction.gasWanted,
+      txData: '', // decodeTxRaw(transaction.tx),
+    };
+  }
+
+  static getTokens = async (
+    chain: Casperish,
+    request: CasperTokenRequest
+  ): Promise<any[]> => {
+    const tokens = await chain.getTokenList(request.tokenSymbols);
+
+    return tokens;
   };
 }

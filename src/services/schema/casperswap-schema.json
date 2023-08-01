@@ -5,15 +5,19 @@
     "allowedSlippage": { "type": "string" },
     "gasLimitEstimate": { "type": "integer" },
     "ttl": { "type": "integer" },
+    "nativeCurrencySymbol": { "type": "string" },
+    "timeToLive": { "type": "integer" },
     "contractAddresses": {
       "type": "object",
       "patternProperties": {
         "^[\\w-]+$": {
           "type": "object",
           "properties": {
-            "routerAddress": { "type": "string" }
+            "routerAddress": { "type": "string" },
+            "nodeURL": { "type": "string" },
+            "tokenURL": { "type": "string" }
           },
-          "required": ["routerAddress"],
+          "required": ["routerAddress", "nodeURL", "tokenURL"],
           "additionalProperties": false
         }
       },
@@ -25,6 +29,8 @@
     "allowedSlippage",
     "gasLimitEstimate",
     "ttl",
-    "contractAddresses"
+    "contractAddresses",
+    "nativeCurrencySymbol",
+    "timeToLive"
   ]
 }
