@@ -23,9 +23,11 @@ import { ReferenceCountingCloseable } from '../../services/refcounting-closeable
 export interface TokenInfo {
   chainId: number;
   address: string;
+  packageHash?: string;
   name: string;
   symbol: string;
   decimals: number;
+  logoURI?: string;
 }
 
 export type NewBlockHandler = (bn: number) => void;

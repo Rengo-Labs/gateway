@@ -29,8 +29,8 @@
     "allowedSlippage",
     "gasLimitEstimate",
     "ttl",
-    "contractAddresses",
     "nativeCurrencySymbol",
-    "timeToLive"
+    "timeToLive",
+    "contractAddresses"
   ]
 }

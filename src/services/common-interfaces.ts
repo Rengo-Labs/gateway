@@ -13,7 +13,7 @@ import {
   Wallet as XdcWallet,
   providers as XdcProviders,
 } from 'ethers-xdc';
-import { EthereumBase } from '../chains/ethereum/ethereum-base';
+import { EthereumBase, TokenInfo } from '../chains/ethereum/ethereum-base';
 import { CosmosBase } from '../chains/cosmos/cosmos-base';
 import { Provider } from '@ethersproject/abstract-provider';
 import { CurrencyAmount, Token, Trade as TradeUniswap } from '@uniswap/sdk';
@@ -122,7 +122,8 @@ export type Tokenish =
   | PancakeSwapToken
   | MMFToken
   | VVSToken
-  | TokenXsswap;
+  | TokenXsswap
+  | TokenInfo;
 
 export type TokenAmountish = MMFTokenAmount | VVSTokenAmount;
 

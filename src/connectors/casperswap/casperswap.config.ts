@@ -13,9 +13,9 @@ export namespace CasperswapConfig {
   }
 
   export const config: NetworkConfig = {
-    casperswapRouterAddress: (chain: string) =>
+    casperswapRouterAddress: (network: string) =>
       ConfigManagerV2.getInstance().get(
-        'casperswap.contractAddresses.' + chain + '.routerAddress'
+        `casper.contractAddresses.${network}.routerAddress`
       ),
     allowedSlippage: '0.5',
     gasLimitEstimate: 100000000,

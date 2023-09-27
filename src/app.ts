@@ -1,4 +1,11 @@
+import 'module-alias/register';
+
+import dotenv from 'dotenv';
+
+dotenv.config();
+
 /* eslint-disable @typescript-eslint/ban-types */
+
 import express from 'express';
 import { Request, Response, NextFunction } from 'express';
 import { ConfigRoutes } from './services/config/config.routes';
@@ -20,6 +27,10 @@ import { CLOBRoutes, PerpClobRoutes } from './clob/clob.routes';
 import morgan from 'morgan';
 import swaggerUi from 'swagger-ui-express';
 import { ChainRoutes } from './chains/chain.routes';
+
+import { RedisConnection } from './storage/redis';
+//import { CasperDaemon } from './utils/daemon';
+import { CasperServiceByJsonRPC } from 'casper-js-sdk';
 
 export const gatewayApp = express();
 
@@ -135,4 +146,22 @@ export const startGateway = async () => {
   }
 
   await startSwagger();
+  RedisConnection.instance
+    .start()
+    .then(async () => {
+      console.log('Redis Start up');
+      await RedisConnection.instance.loadPairs();
+      //const result = await RedisConnection.instance.pairs();
+      //console.log('result', result);
+      //await CasperDaemon.instance.run();
+
+      const client = new CasperServiceByJsonRPC('http://94.130.10.55:7777/rpc');
+      console.log('Client', client);
+      /*
+          client.nodeClient
+            .getStateRootHash()
+            .then((rootHash) => console.log('RootHash', rootHash))
+            .catch((e) => console.error('Error', e));*/
+    })
+    .catch((e) => console.error(e));
 };

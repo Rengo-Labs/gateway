@@ -9,19 +9,19 @@ gasLimitEstimate: 150688
 # perform the trade, but the gas will still be spent.
 ttl: 300
 
+nativeCurrencySymbol: CSPR
+timeToLive: 300
+
 contractAddresses:
   mainnet:
     nodeURL: https://mainnet-node.casperswap.xyz/rpc
     tokenURL: /Users/raul.villca/Desktop/wks/test/gateway/conf/lists/casper_tokens_mainnet.json
-    routerAddress: 'eb9b8c7d9d04fed52df21e52c2e5e30477d59b0dc64df6a63e15f6dc59a4b674'
+    routerAddress: eb9b8c7d9d04fed52df21e52c2e5e30477d59b0dc64df6a63e15f6dc59a4b674
   integrationnet:
     nodeURL: https://mainnet-node.casperswap.xyz/rpc
-    tokenURL: /Users/raul.villca/Desktop/wks/test/gateway/conf/lists/casper_tokens_mainnet.json
-    routerAddress: 'c136dc3468dc8a03aabcdf0b598ce8cb7b4eec78fbf858d201230ca89892510a'
+    tokenURL: /Users/raul.villca/Desktop/wks/test/gateway/conf/lists/casper_tokens_integration.json
+    routerAddress: c136dc3468dc8a03aabcdf0b598ce8cb7b4eec78fbf858d201230ca89892510a
   testnet:
     nodeURL: https://mainnet-node.casperswap.xyz/rpc
-    tokenURL: /Users/raul.villca/Desktop/wks/test/gateway/conf/lists/casper_tokens_mainnet.json
-    routerAddress: 'a2f55d014b8cd2f34f29d83b0b079d62c8985eff699c1c5c034852099efb874d'
-
-nativeCurrencySymbol: CSPR
-timeToLive: 300
+    tokenURL: /Users/raul.villca/Desktop/wks/test/gateway/conf/lists/casper_tokens_testnet.json
+    routerAddress: a2f55d014b8cd2f34f29d83b0b079d62c8985eff699c1c5c034852099efb874d

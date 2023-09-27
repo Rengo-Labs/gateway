@@ -5,16 +5,6 @@ import { BinanceSmartChain } from '../chains/binance-smart-chain/binance-smart-c
 import { Harmony } from '../chains/harmony/harmony';
 import { Polygon } from '../chains/polygon/polygon';
 import { Xdc } from '../chains/xdc/xdc';
-import { MadMeerkat } from '../connectors/mad_meerkat/mad_meerkat';
-import { Openocean } from '../connectors/openocean/openocean';
-import { Pangolin } from '../connectors/pangolin/pangolin';
-import { Perp } from '../connectors/perp/perp';
-import { Quickswap } from '../connectors/quickswap/quickswap';
-import { PancakeSwap } from '../connectors/pancakeswap/pancakeswap';
-import { Uniswap } from '../connectors/uniswap/uniswap';
-import { UniswapLP } from '../connectors/uniswap/uniswap.lp';
-import { VVSConnector } from '../connectors/vvs/vvs';
-import { InjectiveCLOB } from '../connectors/injective/injective';
 import { InjectiveClobPerp } from '../connectors/injective_perpetual/injective.perp';
 import { Injective } from '../chains/injective/injective';
 import {
@@ -27,17 +17,12 @@ import {
   UniswapLPish,
   Xdcish,
 } from './common-interfaces';
-import { Traderjoe } from '../connectors/traderjoe/traderjoe';
-import { Sushiswap } from '../connectors/sushiswap/sushiswap';
-import { Defira } from '../connectors/defira/defira';
 import { Near } from '../chains/near/near';
-import { Ref } from '../connectors/ref/ref';
-import { Xsswap } from '../connectors/xsswap/xsswap';
-import { DexalotCLOB } from '../connectors/dexalot/dexalot';
 import { Algorand } from '../chains/algorand/algorand';
 import { Cosmos } from '../chains/cosmos/cosmos';
 import { Tinyman } from '../connectors/tinyman/tinyman';
 import { Casper } from '../chains/casper/casper';
+import { Casperswap } from '../connectors/casperswap/casperswap';
 
 export type ChainUnion =
   | Algorand
@@ -165,51 +150,10 @@ export async function getConnector<T>(
   address?: string
 ): Promise<Connector<T>> {
   let connectorInstance: ConnectorUnion;
+  console.log('Conector', connector, address);
 
-  if (
-    (chain === 'ethereum' || chain === 'polygon') &&
-    connector === 'uniswap'
-  ) {
-    connectorInstance = Uniswap.getInstance(chain, network);
-  } else if (chain === 'polygon' && connector === 'quickswap') {
-    connectorInstance = Quickswap.getInstance(chain, network);
-  } else if (
-    (chain === 'ethereum' || chain === 'polygon') &&
-    connector === 'uniswapLP'
-  ) {
-    connectorInstance = UniswapLP.getInstance(chain, network);
-  } else if (chain === 'ethereum' && connector === 'perp') {
-    connectorInstance = Perp.getInstance(chain, network, address);
-  } else if (chain === 'avalanche' && connector === 'pangolin') {
-    connectorInstance = Pangolin.getInstance(chain, network);
-  } else if (connector === 'openocean') {
-    connectorInstance = Openocean.getInstance(chain, network);
-  } else if (chain === 'avalanche' && connector === 'traderjoe') {
-    connectorInstance = Traderjoe.getInstance(chain, network);
-  } else if (chain === 'harmony' && connector === 'defira') {
-    connectorInstance = Defira.getInstance(chain, network);
-  } else if (chain === 'cronos' && connector === 'mad_meerkat') {
-    connectorInstance = MadMeerkat.getInstance(chain, network);
-  } else if (chain === 'cronos' && connector === 'vvs') {
-    connectorInstance = VVSConnector.getInstance(chain, network);
-  } else if (chain === 'near' && connector === 'ref') {
-    connectorInstance = Ref.getInstance(chain, network);
-  } else if (chain === 'binance-smart-chain' && connector === 'pancakeswap') {
-    connectorInstance = PancakeSwap.getInstance(chain, network);
-  } else if (connector === 'sushiswap') {
-    connectorInstance = Sushiswap.getInstance(chain, network);
-  } else if (chain === 'injective' && connector === 'injective_perpetual') {
-    connectorInstance = InjectiveClobPerp.getInstance(chain, network);
-  } else if (chain === 'xdc' && connector === 'xsswap') {
-    connectorInstance = Xsswap.getInstance(chain, network);
-  } else if (chain === 'injective' && connector === 'injective') {
-    connectorInstance = InjectiveCLOB.getInstance(chain, network);
-  } else if (chain === 'avalanche' && connector === 'dexalot') {
-    connectorInstance = DexalotCLOB.getInstance(network);
-  } else if (chain == 'algorand' && connector == 'tinyman') {
-    connectorInstance = Tinyman.getInstance(network);
-  } else if (chain == 'casper') {
-    connectorInstance = Casper.getInstance(network);
+  if (chain == 'casper') {
+    connectorInstance = Casperswap.getInstance(chain, network);
   } else {
     throw new Error('unsupported chain or connector');
   }

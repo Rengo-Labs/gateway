@@ -25,7 +25,6 @@ import {
   PerpBalanceResponse,
 } from './amm.requests';
 import {
-  price as uniswapPrice,
   trade as uniswapTrade,
   addLiquidity as uniswapV3AddLiquidity,
   removeLiquidity as uniswapV3RemoveLiquidity,
@@ -34,8 +33,8 @@ import {
   poolPrice as uniswapV3PoolPrice,
   estimateGas as uniswapEstimateGas,
 } from '../connectors/uniswap/uniswap.controllers';
+import { price as casperswapPrice } from '../connectors/casperswap/casperswap.controllers';
 import {
-  price as refPrice,
   trade as refTrade,
   estimateGas as refEstimateGas,
 } from '../connectors/ref/ref.controllers';
@@ -68,40 +67,34 @@ import {
 } from '../services/common-interfaces';
 import { Algorand } from '../chains/algorand/algorand';
 import { Tinyman } from '../connectors/tinyman/tinyman';
+import { Casper } from '../chains/casper/casper';
+import { Casperswap } from '../connectors/casperswap/casperswap';
 
 export async function price(req: PriceRequest): Promise<PriceResponse> {
-  const chain = await getInitializedChain<Algorand | Ethereumish | Nearish>(
-    req.chain,
-    req.network
-  );
-  const connector: Uniswapish | RefAMMish | Tinyman  =
-    await getConnector<Uniswapish | RefAMMish | Tinyman>(
-      req.chain,
-      req.network,
-      req.connector
-    );
+  const chain = await getInitializedChain<
+    Algorand | Ethereumish | Nearish | Casper
+  >(req.chain, req.network);
+  const connector: Uniswapish | RefAMMish | Tinyman = await getConnector<
+    Uniswapish | RefAMMish | Tinyman
+  >(req.chain, req.network, req.connector);
 
   // we currently use the presence of routerAbi to distinguish Uniswapish from RefAMMish
   if ('routerAbi' in connector) {
-    return uniswapPrice(<Ethereumish>chain, connector, req);
+    return casperswapPrice(chain as unknown as Casper, connector as any, req);
   } else if (connector instanceof Tinyman) {
     return tinymanPrice(chain as unknown as Algorand, connector, req);
   } else {
-    return refPrice(<Nearish>chain, connector, req);
+    return casperswapPrice(chain as unknown as Casper, connector as any, req);
   }
 }
 
 export async function trade(req: TradeRequest): Promise<TradeResponse> {
-  const chain = await getInitializedChain<Algorand | Ethereumish | Nearish>(
-    req.chain,
-    req.network
-  );
-  const connector: Uniswapish | RefAMMish | Tinyman =
-    await getConnector<Uniswapish | RefAMMish | Tinyman >(
-      req.chain,
-      req.network,
-      req.connector
-    );
+  const chain = await getInitializedChain<
+    Algorand | Ethereumish | Nearish | Casper
+  >(req.chain, req.network);
+  const connector: Uniswapish | RefAMMish | Tinyman = await getConnector<
+    Uniswapish | RefAMMish | Tinyman
+  >(req.chain, req.network, req.connector);
 
   // we currently use the presence of routerAbi to distinguish Uniswapish from RefAMMish
   if ('routerAbi' in connector) {
@@ -191,6 +184,13 @@ export async function estimateGas(
     return uniswapEstimateGas(<Ethereumish>chain, connector);
   } else if (connector instanceof Tinyman) {
     return tinymanEstimateGas(chain as unknown as Algorand, connector);
+  } else if (connector instanceof Casperswap) {
+    return casperswapPrice(chain as unknown as Casper, connector, {
+      base: 'CSPR',
+      amount: '1000',
+      side: 'BUY',
+      quote: 'WETH',
+    } as any);
   } else {
     return refEstimateGas(<Nearish>chain, connector);
   }

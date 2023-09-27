@@ -145,13 +145,12 @@ export class Casper implements Casperish {
   }
 
   async loadTokens(): Promise<void> {
-    /*this.tokenList = await this.getTokenList();
+    this.tokenList = await this.getTokenList([]);
     console.log('Cargar tokens');
     this.tokenList.forEach((token: any) => {
       this._tokenMap[token.symbol] = token;
       this._tokenAddressMap[token.address] = token;
     });
-    */
   }
 
   // returns a Tokens for a given list source and list type
@@ -159,6 +158,10 @@ export class Casper implements Casperish {
     const tokens: any[] = await new CustomStaticTokenListResolutionStrategy(
       this._config.tokens.url
     ).resolve();
+
+    if (symbols == undefined || symbols.length == 0) {
+      return tokens;
+    }
 
     const result = symbols.map((value) => {
       return tokens.filter((t) => t.symbol === value)[0] ?? null;
@@ -588,9 +591,11 @@ export class Casper implements Casperish {
   }
 
   public getTokenBySymbol(tokenSymbol: string): any | undefined {
-    return this.tokenList.find(
+    const result = this.tokenList.find(
       (token: any) => token.symbol.toUpperCase() === tokenSymbol.toUpperCase()
     );
+
+    return result;
   }
 
   // returns the current slot number
@@ -654,6 +659,8 @@ class CustomStaticTokenListResolutionStrategy {
   constructor(url: string) {
     this.resolve = async () => {
       if (!url.startsWith('https')) {
+        const path = require('path');
+        console.log(path.basename(url));
         return require(url)['tokens'];
       } else {
         return []; //(await runWithRetryAndTimeout<any>(axios, axios.get, [url])).data['tokens'];

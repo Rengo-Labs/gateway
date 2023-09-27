@@ -1,23 +1,13 @@
 import { UniswapishPriceError } from '../../services/error-handler';
 import { CasperswapConfig } from './casperswap.config';
 import routerAbi from './casperswap_router.json';
-//import { ContractInterface } from '@ethersproject/contracts';
-
-// import {
-//   Percent,
-//   Token,
-//   CurrencyAmount,
-//   Trade,
-//   Pair,
-//   TradeType,
-// } from '@sushiswap/sdk';
-//import IUniswapV2Pair from '@uniswap/v2-core/build/IUniswapV2Pair.json';
 import { ExpectedTrade, Uniswapish } from '../../services/common-interfaces';
 
 import { BigNumber } from 'ethers';
 import { percentRegexp } from '../../services/config-manager-v2';
 import { logger } from '../../services/logger';
 import { Casper } from '../../chains/casper/casper';
+import { RedisConnection } from '../../storage/redis';
 
 export class Casperswap implements Uniswapish {
   private static _instances: { [name: string]: Casperswap };
@@ -40,7 +30,7 @@ export class Casperswap implements Uniswapish {
     this._ttl = config.ttl;
     this._routerAbi = routerAbi.abi;
     this._gasLimitEstimate = config.gasLimitEstimate;
-    this._router = config.casperswapRouterAddress(chain);
+    this._router = config.casperswapRouterAddress(network);
     console.error('##### Casperswap constructor ####', this._router);
   }
 
@@ -71,13 +61,6 @@ export class Casperswap implements Uniswapish {
     }
     for (const token of this.chain.storedTokenList) {
       this.tokenList[token.address] = token;
-      // this.tokenList[token.address] = new Token(
-      //   this.chainId,
-      //   token.address,
-      //   token.decimals,
-      //   token.symbol,
-      //   token.name
-      // );
     }
     this._ready = true;
   }
@@ -166,7 +149,7 @@ export class Casperswap implements Uniswapish {
    * @param amount Amount of `baseToken` to put into the transaction
    */
 
-  async estimateSellTrade(
+  public async estimateSellTrade(
     baseToken: any,
     quoteToken: any,
     amount: BigNumber
@@ -176,13 +159,11 @@ export class Casperswap implements Uniswapish {
 
     // const nativeTokenAmount = BigNumber.from(amount.toString());
 
-    logger.info(
-      'estimateSellTrade: ' +
-        baseToken +
-        ' ' +
-        quoteToken +
-        ' ' +
-        amount.toString()
+    console.log(
+      'estimateSellTrade: ',
+      baseToken,
+      quoteToken,
+      amount.toString()
     );
 
     logger.info(
@@ -201,18 +182,14 @@ export class Casperswap implements Uniswapish {
         `priceSwapIn: no trade pair found for ${baseToken} to ${quoteToken}.`
       );
     }
-    logger.info(
-      `Best trade for ${baseToken.address}-${quoteToken.address}: ` +
-        `${trades[0].executionPrice.toFixed(6)}` +
-        `${baseToken.name}.`
-    );
+
     const expectedAmount = trades[0].minimumAmountOut(
       this.getSlippagePercentage()
     );
 
-    return { trade: trades[0], expectedAmount };
+    return Promise.resolve({ trade: trades[0], expectedAmount });
   }
-  async estimateBuyTrade(
+  public async estimateBuyTrade(
     quoteToken: any,
     baseToken: any,
     amount: BigNumber
@@ -236,8 +213,10 @@ export class Casperswap implements Uniswapish {
         amount.toString()
     );
 
-    const trades: any = [];
-    if (!trades || trades.length === 0) {
+    const pairs = await RedisConnection.instance.pairs();
+    console.log('Pares', pairs);
+
+    /*if (!trades || trades.length === 0) {
       throw new UniswapishPriceError(
         `priceSwapOut: no trade pair found for ${quoteToken.address} to ${baseToken.address}.`
       );
@@ -250,8 +229,15 @@ export class Casperswap implements Uniswapish {
 
     const expectedAmount = trades[0].maximumAmountIn(
       this.getSlippagePercentage()
-    );
-    return { trade: trades[0], expectedAmount };
+    );*/
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    return Promise.resolve({
+      trade: {
+        executionPrice: 0,
+      },
+      expectedAmount: 0,
+    });
   }
 
   /**
